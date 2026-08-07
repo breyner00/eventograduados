@@ -2,80 +2,104 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Panel de Administración</title>
+    <title>GENCANA - Panel de Administración</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background: #fafafa;}
-        .container { max-width: 1000px; margin: auto; }
-        table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #333; color: white; }
-        .config-box { background: white; padding: 20px; margin-bottom: 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        input[type="text"] { width: 300px; padding: 8px; }
-        .btn-verificar { background: #007bff; color: white; padding: 8px 12px; border: none; cursor: pointer; border-radius: 3px; }
-        .btn-guardar { background: #28a745; color: white; padding: 10px 15px; border: none; cursor: pointer; border-radius: 3px;}
-        .graduado-tag { background: #ffc107; padding: 3px 8px; border-radius: 10px; font-size: 12px; font-weight: bold; }
-        .estado-verificado { color: green; font-weight: bold; }
+        body { font-family: 'Segoe UI', sans-serif; padding: 20px; background: #121212; color: #fff;}
+        .container { max-width: 1300px; margin: auto; }
+        h1 { color: #ff7b00; border-bottom: 2px solid #333; padding-bottom: 10px;}
+        table { width: 100%; border-collapse: collapse; background: #1e1e1e; margin-top: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); border-radius: 8px; overflow: hidden;}
+        th, td { border: 1px solid #333; padding: 15px; text-align: left; vertical-align: middle;}
+        th { background-color: #ff7b00; color: #000; text-transform: uppercase; font-size: 0.85em; letter-spacing: 1px;}
+        .config-box { background: #1e1e1e; padding: 25px; margin-bottom: 30px; border-radius: 8px; border-left: 4px solid #ff7b00;}
+        input[type="text"] { width: 400px; padding: 10px; background: #333; color: white; border: 1px solid #555; border-radius: 4px;}
+        
+        /* Estilos de botones */
+        .btn { padding: 8px 12px; border: none; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 0.85em; width: 100%; margin-bottom: 5px; transition: 0.2s;}
+        .btn-verificar { background: #28a745; color: white; }
+        .btn-verificar:hover { background: #218838; }
+        .btn-guardar { background: #ff7b00; color: #000; padding: 10px 20px; width: auto;}
+        .btn-eliminar { background: #dc3545; color: white; }
+        .btn-eliminar:hover { background: #c82333; }
+        .btn-graduado { background: #f1c40f; color: #000; }
+        .btn-graduado:hover { background: #d4ac0d; }
+        .btn-quitar-graduado { background: #6c757d; color: white; }
+        
+        a { color: #00a8ff; text-decoration: none;}
+        a:hover { text-decoration: underline;}
+        
+        .badge { padding: 4px 8px; border-radius: 12px; font-size: 0.8em; font-weight: bold; text-transform: uppercase; }
+        .badge-graduado { background: #f1c40f; color: #000; }
+        .estado-verificado { color: #28a745; font-weight: bold; }
+        .form-inline { display: inline-block; width: 100%; margin: 0; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>⚙️ Panel de Administración del Evento</h1>
+        <h1>⚙️ GENCANA - Centro de Control Administrativo</h1>
         
         <div class="config-box">
-            <h3>Actualizar Datos de Pago</h3>
+            <h3 style="margin-bottom: 15px;">Actualizar Datos Bancarios</h3>
             <form action="/admin/actualizar-config" method="POST">
-                <label>Datos de la Cuenta:</label>
                 <input type="text" name="cuenta_bancaria" value="<%= config.cuenta_bancaria %>">
-                <label>Precio:</label>
-                <input type="text" name="precio" value="<%= config.precio %>">
-                <button type="submit" class="btn-guardar">Guardar Cambios</button>
+                <button type="submit" class="btn btn-guardar">Guardar Cuenta</button>
             </form>
         </div>
 
-        <h3>Lista de Inscritos</h3>
+        <h3>Base de Datos de Inscripciones</h3>
         <table>
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Contacto</th>
-                    <th>¿Es Graduado?</th>
+                    <th>Participante</th>
+                    <th>Sede / Detalles</th>
                     <th>Comprobante</th>
-                    <th>Estado</th>
-                    <th>Acción</th>
+                    <th>Estado de Pago</th>
+                    <th>Gestión</th>
                 </tr>
             </thead>
             <tbody>
                 <% inscripciones.forEach(function(inscripcion) { %>
                     <tr>
                         <td><%= inscripcion.id %></td>
-                        <td><%= inscripcion.nombre %></td>
-                        <td><%= inscripcion.telefono %> <br> <small><%= inscripcion.email %></small></td>
                         <td>
-                            <% if(inscripcion.es_graduado) { %>
-                                <span class="graduado-tag">🎓 Graduado</span>
-                            <% } else { %>
-                                Invitado
+                            <strong><%= inscripcion.nombre %></strong><br>
+                            <small style="color:#aaa;"><%= inscripcion.telefono %> | <%= inscripcion.email %></small><br>
+                            <% if(inscripcion.es_graduado === 1) { %>
+                                <span class="badge badge-graduado">🎓 Graduado Oficial</span>
                             <% } %>
                         </td>
+                        <td style="color: #ff7b00; font-weight: bold;"><%= inscripcion.sede %></td>
                         <td>
                             <% if(inscripcion.comprobante_url) { %>
-                                <a href="<%= inscripcion.comprobante_url %>" target="_blank">Ver Pago</a>
+                                <a href="<%= inscripcion.comprobante_url %>" target="_blank">📄 Ver Archivo</a>
                             <% } else { %>
-                                No adjunto
+                                <span style="color:#ff4444;">Sin adjunto</span>
                             <% } %>
                         </td>
                         <td class="<%= inscripcion.estado === 'Verificado' ? 'estado-verificado' : '' %>">
                             <%= inscripcion.estado %>
                         </td>
                         <td>
+                            <!-- Botón Verificar Pago -->
                             <% if(inscripcion.estado === 'Pendiente') { %>
-                                <form action="/admin/verificar/<%= inscripcion.id %>" method="POST" style="display:inline;">
-                                    <button type="submit" class="btn-verificar">Marcar Verificado</button>
+                                <form class="form-inline" action="/admin/verificar/<%= inscripcion.id %>" method="POST" onsubmit="return confirm('¿Seguro que deseas marcar este pago como verificado?');">
+                                    <button type="submit" class="btn btn-verificar">✓ Verificar Pago</button>
                                 </form>
-                            <% } else { %>
-                                ✅ Listo
                             <% } %>
+
+                            <!-- Botón Alternar Graduado -->
+                            <form class="form-inline" action="/admin/graduado/<%= inscripcion.id %>" method="POST">
+                                <% if(inscripcion.es_graduado === 1) { %>
+                                    <button type="submit" class="btn btn-quitar-graduado">Quitar título graduado</button>
+                                <% } else { %>
+                                    <button type="submit" class="btn btn-graduado">🎓 Marcar como Graduado</button>
+                                <% } %>
+                            </form>
+
+                            <!-- Botón Eliminar -->
+                            <form class="form-inline" action="/admin/eliminar/<%= inscripcion.id %>" method="POST" onsubmit="return confirm('ATENCIÓN: ¿Estás completamente seguro de borrar a <%= inscripcion.nombre %> del sistema? Esto no se puede deshacer.');">
+                                <button type="submit" class="btn btn-eliminar">🗑️ Borrar Registro</button>
+                            </form>
                         </td>
                     </tr>
                 <% }); %>
