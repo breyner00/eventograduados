@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Administración</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #fafafa;}
+        .container { max-width: 1000px; margin: auto; }
+        table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #333; color: white; }
+        .config-box { background: white; padding: 20px; margin-bottom: 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        input[type="text"] { width: 300px; padding: 8px; }
+        .btn-verificar { background: #007bff; color: white; padding: 8px 12px; border: none; cursor: pointer; border-radius: 3px; }
+        .btn-guardar { background: #28a745; color: white; padding: 10px 15px; border: none; cursor: pointer; border-radius: 3px;}
+        .graduado-tag { background: #ffc107; padding: 3px 8px; border-radius: 10px; font-size: 12px; font-weight: bold; }
+        .estado-verificado { color: green; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚙️ Panel de Administración del Evento</h1>
+        
+        <div class="config-box">
+            <h3>Actualizar Datos de Pago</h3>
+            <form action="/admin/actualizar-config" method="POST">
+                <label>Datos de la Cuenta:</label>
+                <input type="text" name="cuenta_bancaria" value="<%= config.cuenta_bancaria %>">
+                <label>Precio:</label>
+                <input type="text" name="precio" value="<%= config.precio %>">
+                <button type="submit" class="btn-guardar">Guardar Cambios</button>
+            </form>
+        </div>
+
+        <h3>Lista de Inscritos</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Contacto</th>
+                    <th>¿Es Graduado?</th>
+                    <th>Comprobante</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% inscripciones.forEach(function(inscripcion) { %>
+                    <tr>
+                        <td><%= inscripcion.id %></td>
+                        <td><%= inscripcion.nombre %></td>
+                        <td><%= inscripcion.telefono %> <br> <small><%= inscripcion.email %></small></td>
+                        <td>
+                            <% if(inscripcion.es_graduado) { %>
+                                <span class="graduado-tag">🎓 Graduado</span>
+                            <% } else { %>
+                                Invitado
+                            <% } %>
+                        </td>
+                        <td>
+                            <% if(inscripcion.comprobante_url) { %>
+                                <a href="<%= inscripcion.comprobante_url %>" target="_blank">Ver Pago</a>
+                            <% } else { %>
+                                No adjunto
+                            <% } %>
+                        </td>
+                        <td class="<%= inscripcion.estado === 'Verificado' ? 'estado-verificado' : '' %>">
+                            <%= inscripcion.estado %>
+                        </td>
+                        <td>
+                            <% if(inscripcion.estado === 'Pendiente') { %>
+                                <form action="/admin/verificar/<%= inscripcion.id %>" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn-verificar">Marcar Verificado</button>
+                                </form>
+                            <% } else { %>
+                                ✅ Listo
+                            <% } %>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
