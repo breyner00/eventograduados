@@ -35,7 +35,6 @@ db.serialize(() => {
         }
     });
 
-    // Agregamos la columna "es_graduado" para uso exclusivo del administrador
     db.run(`CREATE TABLE IF NOT EXISTS inscripciones (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nombre TEXT,
@@ -62,8 +61,12 @@ app.post('/inscribirse', upload.single('comprobante'), (req, res) => {
     db.run(`INSERT INTO inscripciones (nombre, email, telefono, sede, comprobante_url) VALUES (?, ?, ?, ?, ?)`, 
         [nombre, email, telefono, sede, comprobante_url], 
         function(err) {
-            if (err) return console.log(err.message);
-            res.send("<body style='background:#121212; color:#ff7b00; text-align:center; padding:50px; font-family:sans-serif;'><h2>¡Inscripción recibida con éxito en el sistema!</h2><p style='color:white'>Verificaremos los datos para la gran noche de GENCANA.</p></body>");
+            // AQUÍ ESTÁ LA MEJORA: Si hay un error, ya no se queda cargando, te avisa.
+            if (err) {
+                console.error("Error guardando en la BD:", err.message);
+                return res.send("<body style='background:#121212; color:#ff4444; text-align:center; padding:50px; font-family:sans-serif;'><h2>Error del Sistema</h2><p style='color:white'>Ocurrió un problema al guardar la inscripción. Por favor, intenta nuevamente.</p><br><a href='/' style='color:#ff7b00;'>Volver al formulario</a></body>");
+            }
+            res.send("<body style='background:#121212; color:#ff7b00; text-align:center; padding:50px; font-family:sans-serif;'><h2>¡Inscripción recibida con éxito en el sistema!</h2><p style='color:white'>Verificaremos los datos para la gran noche de GENCANA.</p><br><a href='/' style='color:#ff7b00; text-decoration:none; border: 1px solid #ff7b00; padding: 10px 20px; border-radius: 5px;'>Hacer otra inscripción</a></body>");
         }
     );
 });
@@ -91,7 +94,6 @@ app.post('/admin/verificar/:id', (req, res) => {
     });
 });
 
-// NUEVO: Ruta para alternar si es graduado o no
 app.post('/admin/graduado/:id', (req, res) => {
     const id = req.params.id;
     db.get(`SELECT es_graduado FROM inscripciones WHERE id = ?`, [id], (err, row) => {
@@ -102,7 +104,6 @@ app.post('/admin/graduado/:id', (req, res) => {
     });
 });
 
-// NUEVO: Ruta para eliminar un registro
 app.post('/admin/eliminar/:id', (req, res) => {
     const id = req.params.id;
     db.run(`DELETE FROM inscripciones WHERE id = ?`, [id], (err) => {
